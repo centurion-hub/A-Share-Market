@@ -1,0 +1,55 @@
+import pandas as pd
+import statsmodels.api as sm
+from pathlib import Path
+
+FUND_DAILY = r"D:\A share market\20240910_fund_dayReturn.csv"
+INDEX_DAILY = r"D:\A share market\20240910_index_return.csv"
+
+def main():
+    fund_df = pd.read_csv(FUND_DAILY)
+    index_df = pd.read_csv(INDEX_DAILY)
+
+    fund_df = fund_df.rename(columns={'Unnamed: 0': 'date'})
+    fund_df['date'] = pd.to_datetime(fund_df['date'])
+    try:
+        index_df['date'] = pd.to_datetime(index_df['date'].astype(str), format='%Y%m%d')
+    except Exception:
+        index_df['date'] = pd.to_datetime(index_df['date'])
+
+    merged_df = pd.merge(fund_df, index_df, on='date', how='inner')
+
+    fund_cols = fund_df.columns[1:]
+    merged_df = merged_df[~(merged_df[fund_cols].sum(axis=1) == 0)]
+
+    # Pre-listing zeros to NaN
+    cleaned = merged_df[fund_cols].copy()
+    for col in cleaned.columns:
+        s = cleaned[col]
+        first_nonzero_idx = s.ne(0).idxmax()
+        cleaned.loc[:first_nonzero_idx - 1, col] = pd.NA
+    merged_df[fund_cols] = cleaned
+
+    # Convert % to decimal if needed
+    if merged_df[fund_cols].abs().stack().quantile(0.999) > 1:
+        merged_df[fund_cols] = merged_df[fund_cols] / 100.0
+    for m in ['000300.SH', '000905.SH']:
+        if merged_df[m].abs().quantile(0.999) > 1:
+            merged_df[m] = merged_df[m] / 100.0
+
+    merged_df['fund_avg_return'] = merged_df[fund_cols].mean(axis=1, skipna=True)
+
+    X = sm.add_constant(merged_df[['000300.SH', '000905.SH']])
+    y = merged_df['fund_avg_return']
+    model = sm.OLS(y, X, missing='drop').fit()
+
+    print("=== Aggregate Fund Regression (Two-Factor: HS300 + ZZ500) ===")
+    for k in ['const', '000300.SH', '000905.SH']:
+        print(f"{k:>12}: {model.params[k]: .6f} (t = {model.tvalues[k]: .2f})")
+    print(f"R^2: {model.rsquared:.4f}")
+
+    out = Path(__file__).resolve().parents[1] / 'results' / 'fund_data_cleaned_twofactor.csv'
+    merged_df.to_csv(out, index=False)
+    print('Saved cleaned merge:', out)
+
+if __name__ == '__main__':
+    main()
