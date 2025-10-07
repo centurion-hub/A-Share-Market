@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-DEFAULT_INPUT = r'D:\A share market\20240910_fund_dayReturn.csv'
+DEFAULT_INPUT = r'D:\A_share_market\20240910_fund_dayReturn.csv'
 OUTPUT_CSV = Path(__file__).resolve().parents[1] / 'results' / 'monthly_fund_returns.csv'
 
 def replace_leading_zeros_with_nan(series: pd.Series) -> pd.Series:

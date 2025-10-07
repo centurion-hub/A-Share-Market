@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-FUND_DAILY = r"D:\A share market\20240910_fund_dayReturn.csv"
-INDEX_DAILY = r"D:\A share market\20240910_index_return.csv"
+FUND_DAILY = r"D:\A_share_market\20240910_fund_dayReturn.csv"
+INDEX_DAILY = r"D:\A_share_market\20240910_index_return.csv"
 
 def strip_leading_zeros_to_nan(col: pd.Series) -> pd.Series:
     # Identify first non-zero, non-NaN and mask all earlier zeros as NaN

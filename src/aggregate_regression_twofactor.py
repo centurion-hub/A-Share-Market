@@ -2,8 +2,8 @@ import pandas as pd
 import statsmodels.api as sm
 from pathlib import Path
 
-FUND_DAILY = r"D:\A share market\20240910_fund_dayReturn.csv"
-INDEX_DAILY = r"D:\A share market\20240910_index_return.csv"
+FUND_DAILY = r"D:\A_share_market\20240910_fund_dayReturn.csv"
+INDEX_DAILY = r"D:\A_share_market\20240910_index_return.csv"
 
 def main():
     fund_df = pd.read_csv(FUND_DAILY)

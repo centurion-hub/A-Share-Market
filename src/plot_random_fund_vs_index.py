@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import random
 from pathlib import Path
 
-FUND_PATH = r'D:\A share market\20240910_fund_dayReturn.csv'
-INDEX_PATH = r'D:\A share market\20240910_index_return.csv'
+FUND_PATH = r'D:\A_share_market\20240910_fund_dayReturn.csv'
+INDEX_PATH = r'D:\A_share_market\20240910_index_return.csv'
 
 def replace_leading_zeros_with_nan(series: pd.Series) -> pd.Series:
     # Determine the first non-zero return index
